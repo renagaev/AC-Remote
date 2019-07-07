@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Кондей</title>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans"/>
+
+</head>
+<body>
+<div>
+    <h1 style="top: 50%; position: relative">Температура: <span id="temp"></span>
+        <br/>Влажность: <span id="hum"></span></h1>
+</div>
+</div>
+<div style="bottom: 5%; position: absolute">
+    <button id="sync">
+        Синхронизировать
+    </button>
+    <button id="onoff"></button>
+</div>
+</body>
+<script>
+    let data = {"temp": "", "hum": ""}
+    let state = false;
+    let baseUrl = "";
+    let button = document.getElementById("onoff")
+
+
+    fetch(baseUrl + "/stat").then((resp) => {
+        return resp.json()
+    }).then((json) => {
+        document.getElementById("hum").innerText = json.hum
+        document.getElementById("temp").innerText = json.temp
+    })
+
+    button.addEventListener("click", function () {
+        fetch(baseUrl + "/onoff").then(() => {
+            syncState()
+        })
+    });
+    syncState = () => {
+        fetch(baseUrl + "/state").then((resp) => resp.text()
+        ).then((text) => {
+            if (text === "0") {
+                button.innerText = "Включить"
+
+            } else {
+                button.innerText = "Выключить"
+            }
+        })
+    }
+    syncState()
+    changeState = () => {
+        fetch(baseUrl + "/changeState").then(() => {
+            syncState()
+        })
+    }
+    document.getElementById("sync").addEventListener("click", changeState)
+</script>
+<style>
+    h1, button {
+        font-size: 45px;
+        font-family: "Open Sans";
+    }
+
+    #onoff {
+        height: 20vh;
+        width: 80vw;
+    }
+    button {
+        border-radius: 30px;
+        border: 0px;
+    }
+
+    body {
+        height: 100vh;
+        text-align: center;
+    }
+
+    #sync {
+        border: 0px;
+        height: 20vh;
+        width: 80vw;
+        margin: 30px auto;
+        background-color: rgba(0, 108, 255, 0.3);
+
+    }
+</style>
+</html>
